@@ -4,7 +4,7 @@
 
     pip install -r requirements.txt
 
-which installs the depnedencies [uielem](https://github.com/asrp/uielem) and [undoable](https://github.com/asrp/undoable). Run
+which installs the dependencies [uielem](https://github.com/asrp/uielem) and [undoable](https://github.com/asrp/undoable). Run
 
     python guided_tour.py
 
