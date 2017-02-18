@@ -2,7 +2,7 @@
 
 ## Installation and running
 
-    pip install requirements.txt
+    pip install -r requirements.txt
 
 which installs the depnedencies [uielem](https://github.com/asrp/uielem) and [undoable](https://github.com/asrp/undoable). Run
 
