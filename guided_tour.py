@@ -23,9 +23,9 @@ class TkGuide:
         # Hack! Should be elsewhere
         if self.step_index == 0:
             try:
-                self.image = tk.PhotoImage(data=open(os.path.join("docs", "platypus_logo.gif")).read()).subsample(2)
-            except:
-                self.image = tk.PhotoImage(name=os.path.join("docs", "platypus_logo.gif")).subsample(2)
+                self.image = tk.PhotoImage(file=os.path.join("docs", "platypus_logo.gif")).subsample(2)
+            except tk.TclError:
+                self.image = tk.PhotoImage() # fallback
             uidict["guide"].image_create('end', image=self.image)
             uidict["guide"].insert('end', "\n")
         add_tagged(uidict["guide"], limited_markdown(self.step.message.strip()))
