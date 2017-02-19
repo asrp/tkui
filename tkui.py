@@ -125,7 +125,7 @@ class BoxedList(tk.Listbox):
         self.insert(tk.END, item)
 
     def lselection(self):
-        return [self._list[index] for index in self.curselection()]
+        return [self._list[int(index)] for index in self.curselection()]
 
 class BoxedDict(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -355,7 +355,7 @@ class UITree:
 
     def addwidget(self, location="sibling", kwargs=None, *args):
         index, widget = self.tree.wselection()[0]
-        uiname = uidict["uilist"]._list[uidict["uilist"].curselection()[0]]
+        uiname = uidict["uilist"]._list[int(uidict["uilist"].curselection()[0])]
         logging.debug("Adding %s %s %s %s %s", widget, kwargs, uiname, eval(uiname), uidict["child params"].text.split(","))
         # Need to think of something safer than eval.
         if location == "child":
