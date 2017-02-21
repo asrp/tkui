@@ -292,7 +292,8 @@ class BoxedTree(ttk.Treeview):
             index, = args
             oldvalue = undo[1]
             # TODO: Fix (should maybe call remove but then needs to not remove twice from list). This is the old fixed point problem.
-            oldvalue.elem.pack_forget()
+            if hasattr(oldvalue, "elem"):
+                oldvalue.elem.pack_forget()
             self.detach(oldvalue.treeindex)
             del self.widget[oldvalue.treeindex]
             oldvalue.treeindex = None
@@ -399,6 +400,7 @@ class UITree:
             newparent = sibling = parent[parent.index(widget) - 1]
             newindex = len(widget.parent)
         widget.setparent(newparent, newindex)
+        recursive_lift(widget)
 
 def gencode(root=None, filename="generated_tree.py", prefix="uiroot = "):
     if root is None:
