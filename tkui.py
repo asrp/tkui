@@ -354,6 +354,8 @@ class UITree:
         self.indexof = {}
 
     def addwidget(self, location="sibling", kwargs=None, *args):
+        if kwargs is None:
+            kwargs = {}
         index, widget = self.tree.wselection()[0]
         uiname = uidict["uilist"]._list[int(uidict["uilist"].curselection()[0])]
         logging.debug("Adding %s %s %s %s %s", widget, kwargs, uiname, eval(uiname), uidict["child params"].text.split(","))
