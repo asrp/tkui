@@ -333,8 +333,11 @@ class BoxedTree(ttk.Treeview):
         for subelem in elem:
             self.addtreeelem(subelem, index)
 
+    def selectiondict(self):
+        return {index: self.widget[index] for index in self.selection()}
+
     def wselection(self):
-        return [(index, self.widget[index]) for index in self.selection()]
+        return [self.widget[index] for index in self.selection()]
 
     def selection_set(self, *args, **kwargs):
         return ttk.Treeview.selection_set(self, *args, **kwargs)
@@ -356,7 +359,7 @@ class UITree:
     def addwidget(self, location="sibling", kwargs=None, *args):
         if kwargs is None:
             kwargs = {}
-        index, widget = self.tree.wselection()[0]
+        widget = self.tree.wselection()[0]
         uiname = uidict["uilist"]._list[int(uidict["uilist"].curselection()[0])]
         logging.debug("Adding %s %s %s %s %s", widget, kwargs, uiname, eval(uiname), uidict["child params"].text.split(","))
         # Need to think of something safer than eval.
@@ -377,16 +380,16 @@ class UITree:
             newelem.elem.bind("<B3-Motion>", drag)
 
     def delwidget(self, *args):
-        index, widget = self.tree.wselection()[0]
+        widget = self.tree.wselection()[0]
         widget.parent.remove(widget)
 
     def move_by(self, diff, *args):
-        index, widget = self.tree.wselection()[0]
+        widget = self.tree.wselection()[0]
         logging.debug("Moving %s by %s" % (widget, diff))
         newindex = widget.parent.move_by(widget, diff)
 
     def reparent(self, direction, *args):
-        index, widget = self.tree.wselection()[0]
+        widget = self.tree.wselection()[0]
         logging.debug("reparenting %s", widget)
         if direction == "left":
             newparent = widget.parent.parent
@@ -415,18 +418,21 @@ def update_param(event, _dict, *args):
     logging.debug("update %s %s %s", event, _dict, args)
     if event == "set":
         key, oldvalue = args
-        wkey, widget = uidict["tree"].wselection()[0]
+        widget = uidict["tree"].wselection()[0]
         widget.update(key, eval(_dict[key]))
     elif event == "create":
         key, value, oldvalue = args
-        wkey, widget = uidict["tree"].wselection()[0]
+        widget = uidict["tree"].wselection()[0]
         widget.update(key, eval(_dict[key]))
 
 def select_callback(event):
     selection = event.widget.wselection()
     if uidict["autoparam"].value and selection:
-        widget = selection[0][1]
+        widget = selection[0]
         uidict["params"]._dict.replace(widget.kwargs)
+
+def selection():
+    return uidict["tree"].wselection()
 
 def recursive_lift(widget):
     if widget.elemtype.__name__ == "Canvas":
@@ -459,7 +465,7 @@ def xy(event, widget=None):
 
 def drag(event):
     if time.time() - startdragtime > dragdelay:
-        index, widget = uidict["tree"].wselection()[0]
+        widget = uidict["tree"].wselection()[0]
         #widget.elem.pack_forget()
         x, y = xy(event, widget.elem)
         recursive_lift(widget)
@@ -493,7 +499,7 @@ def markereval(marker):
         # Should this be evaluated?
         return entry.text
     elif isinstance(widget, BoxedTree):
-        return simplify(dict(widget.wselection()))
+        return simplify(widget.wselection())
 
 def markerargs():
     kwargs = {}
