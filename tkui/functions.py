@@ -34,7 +34,7 @@ def redo(*args):
     undolog.redo()
 
 def reload():
-    execfile("functions.py", globals())
+    execfile(os.path.join(os.path.dirname(__file__), "functions.py"), globals())
 
 def printmarker():
     args, kwargs = markerargs()

@@ -1,5 +1,6 @@
 import logging
 import traceback
+import sys, pdb
 import Tkinter as tk
 from uielem import uidict, UI, bindlist
 from ScrolledText import ScrolledText as TkScrolledText
@@ -234,6 +235,7 @@ class TkTerp:
             co = compile(command, "<ui>", "single")
             exec co in globs
         except:
+            self.last_tb = sys.exc_traceback
             traceback.print_exc()
         if len(self.history) > 1 and command == self.history[-2]:
             self.history[-1] = ""
@@ -243,6 +245,9 @@ class TkTerp:
             self.histindex = len(self.history)
             self.history.append("")
         event.widget.text = ""
+
+    def pm(self):
+        pdb.post_mortem(self.last_tb)
 
     def hist(self, event):
         if event.keysym == "Up":
@@ -402,9 +407,10 @@ class UITree:
         widget.setparent(newparent, newindex)
         recursive_lift(widget)
 
-def gencode(root=None, filename="generated_tree.py", prefix="uiroot = "):
-    if root is None:
-        root = uiroot
+def gencode(root=None, filename=None, prefix="uiroot = "):
+    root = uiroot if root is None else root
+    if filename is None:
+        filename = os.path.join(os.path.dirname(__file__), "generated_tree.py")
     code = "%s%s" % (prefix, root.code(len(prefix)).strip())
     open(filename, "w").write(code)
 
@@ -449,7 +455,8 @@ def click(event):
     widget = event.widget
     logging.debug("clicked at %s %s on top of %s", event.x, event.y, widget)
     logging.debug("%s %s", type(widget), widget.__class__)
-    key = [k for k, v in uidict["tree"].widget.items() if v.elem == widget][0]
+    key = [k for k, v in uidict["tree"].widget.items()
+           if getattr(v, "elem", None) == widget][0]
     uidict["tree"].selection_set(key)
     #recursive_lift(widget.ui)
     startdragtime = time.time()
@@ -545,8 +552,8 @@ if __name__ == "__main__":
         terp.save()
         uidict["root"].destroy()
 
-    execfile("functions.py")
-    execfile("generated_tree.py")
+    execfile(os.path.join(os.path.dirname(__file__), "functions.py"))
+    execfile(os.path.join(os.path.dirname(__file__), "generated_tree.py"))
     uiroot.makeelem()
 
     uidict["uilist"].reset(tkuilist)
